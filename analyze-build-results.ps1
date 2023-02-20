@@ -11,8 +11,7 @@ $projects = Invoke-RestMethod -Uri "$baseUrl/_apis/projects?$queryString" -Metho
 $projectCount = $projects.count
 $index = 0
 
-foreach($project in $projects.value)
-{
+foreach($project in $projects.value) {
     $projectName = $project.name
     $index += 1
 
@@ -22,22 +21,20 @@ foreach($project in $projects.value)
 
     $builds = Invoke-RestMethod -Uri "$baseUrl/$projectName/_apis/build/builds?$queryString" -Method Get -ContentType "application/json" -Headers $headers
     
-    foreach($build in $builds.value)
-    {
+    foreach($build in $builds.value) {
         $buildId = $build.id
 
         try {
             $artifacts = Invoke-RestMethod -Uri "$baseUrl/$projectName/_apis/build/builds/$buildId/artifacts?$queryString" -Method Get -ContentType "application/json" -Headers $headers
         
-            foreach($artifact in $artifacts.value)
-            {
+            foreach($artifact in $artifacts.value) {
                 $list += [PSCustomObject]@{
                     Project = $projectName
                     BuildDefinition = $build.definition.name
                     BuildNumber = $build.buildNumber
                     BuildUrl = $build.url
                     Artifact = $artifact.name
-                     SizeInKB    = [math]::ceiling($artifact.resource.properties.artifactsize / 1000)
+                    SizeInKB    = [math]::ceiling($artifact.resource.properties.artifactsize / 1000)
                     Date = $build.startTime.ToString("dd.MM.yyyy")
                 }
             }
@@ -47,8 +44,7 @@ foreach($project in $projects.value)
         }
     }
 
-    if($list.Count -gt 0)
-    {
+    if($list.Count -gt 0) {
         $list | Export-Csv "$projectName.csv" -NoTypeInformation
     }
 }

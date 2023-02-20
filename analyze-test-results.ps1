@@ -11,8 +11,7 @@ $projects = Invoke-RestMethod -Uri "$baseUrl/_apis/projects?$queryString" -Metho
 $projectCount = $projects.count
 $index = 0
 
-foreach($project in $projects.value)
-{
+foreach($project in $projects.value) {
     $projectName = $project.name
     $index += 1
 
@@ -22,15 +21,13 @@ foreach($project in $projects.value)
 
     $runs = Invoke-RestMethod -Uri "$baseUrl/$projectName/_apis/test/runs?$queryString" -Method Get -ContentType "application/json" -Headers $headers
     
-    foreach($run in $runs.value)
-    {
+    foreach($run in $runs.value) {
         $runId = $run.id
 
         try {
             $attachments = Invoke-RestMethod -Uri "$baseUrl/$projectName/_apis/test/runs/$runId/attachments?$queryString" -Method Get -ContentType "application/json" -Headers $headers
         
-            foreach($attachment in $attachments.value)
-            {
+            foreach($attachment in $attachments.value) {
                 $list += [PSCustomObject]@{
                     Project = $projectName
                     RunName = $run.name
@@ -47,8 +44,7 @@ foreach($project in $projects.value)
         }
     }
 
-    if($list.Count -gt 0)
-    {
+    if($list.Count -gt 0) {
         $list | Export-Csv "$projectName.csv" -NoTypeInformation
     }
 }
